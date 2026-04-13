@@ -1,0 +1,509 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Copiloto Virtual - Ahora podés viajar por todo San Luis</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; }
+    #map { height: 350px; width: 100%; margin-bottom: 24px; }
+    .copiloto-btn {
+      background-color: #ffa500;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      z-index: 1000;
+    }
+    #copiloto-panel {
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 24px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      text-align: center;
+    }
+    #copiloto-panel img {
+      width: 80px;
+      margin-bottom: 16px;
+    }
+    #indicacion {
+      margin-top: 24px;
+      font-size: 20px;
+      color: #333;
+    }
+    /* Estilos para el test de alcoholemia virtual */
+    #claki-test-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    #claki-test-modal > div {
+      background: #fff;
+      padding: 32px 24px;
+      border-radius: 16px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.25);
+      text-align: center;
+      position: relative;
+    }
+    #claki-test-modal img {
+      width: 70px;
+      margin-bottom: 12px;
+    }
+    #claki-test-content {
+      font-size: 18px;
+      margin-bottom: 18px;
+    }
+    .claki-opcion {
+      margin: 8px 6px;
+      padding: 8px 18px;
+      font-size: 16px;
+      background: #ffa500;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #activarTestClaki {
+      padding: 10px 22px;
+      font-size: 16px;
+      background: #0077cc;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 1500;
+    }
+  </style>
+</head>
+<body>
+  <h1>Copiloto Virtual: ¡Ahora podés viajar por todo San Luis!</h1>
+  <div style="text-align:center;margin-bottom:16px;color:#555;font-size:18px;font-weight:bold;">
+    En honor a Claki, piloto de Tilisarao y educador vial. Su legado: ¡la seguridad primero!
+  </div>
+  <div id="map"></div>
+  <div id="ubicacionUsuario" style="text-align:center;margin-bottom:18px;color:#0077cc;font-size:16px;font-weight:bold;">Ubicación actual: <span id="coordenadasUsuario">Obteniendo...</span></div>
+  <div id="copiloto-panel">
+    <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt="Auto">
+    <h2>¡Bienvenido al Copiloto Virtual!</h2>
+    <p>El copiloto te guiará desde tu ubicación actual hasta el destino que elijas en San Luis.<br>Presiona el botón para iniciar el viaje y sigue las indicaciones.</p>
+    <button id="iniciarCopiloto" style="padding:12px 28px;font-size:18px;background:#ffa500;color:#fff;border:none;border-radius:8px;cursor:pointer;">Iniciar Copiloto</button>
+    <div id="indicacion"></div>
+  </div>
+  <div id="claki-test-modal">
+    <div>
+      <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt="Claki">
+      <h2>Test de Claki (Piloto de Tilisarao)</h2>
+      <div id="claki-test-content"></div>
+      <button id="claki-test-close" style="display:none;margin-top:18px;padding:8px 20px;background:#aaa;color:#fff;border:none;border-radius:8px;cursor:pointer;">Cerrar</button>
+    </div>
+  </div>
+  <button id="activarTestClaki" style="padding:10px 22px;font-size:16px;background:#0077cc;color:#fff;border:none;border-radius:8px;cursor:pointer;position:fixed;top:18px;right:18px;z-index:1500;">Test de Claki</button>
+  <div id="seleccion-destino" style="max-width:500px;margin:24px auto 0 auto;text-align:center;">
+    <label for="destinoSelect" style="font-size:17px;font-weight:bold;">Destino en San Luis:</label>
+    <select id="destinoSelect" style="padding:8px 12px;font-size:16px;border-radius:6px;border:1px solid #ccc;width:60%;margin:8px 0;">
+      <option value="">Selecciona un destino...</option>
+      <option value="San Luis">San Luis (Capital)</option>
+      <option value="Villa Mercedes">Villa Mercedes</option>
+      <option value="Merlo">Merlo</option>
+      <option value="La Toma">La Toma</option>
+      <option value="Concarán">Concarán</option>
+      <option value="Tilisarao">Tilisarao</option>
+      <option value="Justo Daract">Justo Daract</option>
+      <option value="Quines">Quines</option>
+      <option value="Naschel">Naschel</option>
+      <option value="Santa Rosa del Conlara">Santa Rosa del Conlara</option>
+      <option value="Luján">Luján</option>
+      <option value="Candelaria">Candelaria</option>
+      <option value="La Punta">La Punta</option>
+      <option value="El Trapiche">El Trapiche</option>
+      <option value="Potrero de los Funes">Potrero de los Funes</option>
+    </select>
+    <button id="buscarDestino" style="padding:8px 18px;font-size:16px;background:#0077cc;color:#fff;border:none;border-radius:8px;cursor:pointer;">Buscar destino</button>
+    <div id="destinoStatus" style="margin-top:8px;color:#0077cc;font-size:15px;"></div>
+  </div>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Coordenadas de Tilisarao y Concarán
+    var tilisarao = { lat: -32.683, lng: -65.188 };
+    var concaran = { lat: -32.573, lng: -65.247 };
+    var distanciaTotal = calcularDistancia(tilisarao, concaran); // en km
+
+    // Inicializar mapa cuando cargue la página
+    document.addEventListener('DOMContentLoaded', function() {
+      var map = L.map('map').setView([tilisarao.lat, tilisarao.lng], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+      // Ruta principal
+      var ruta = [ [tilisarao.lat, tilisarao.lng], [concaran.lat, concaran.lng] ];
+      L.polyline(ruta, {color: 'orange', weight: 6, opacity: 0.7, dashArray: '10,10'}).addTo(map)
+        .bindPopup('Ruta Tilisarao → Concarán');
+      // Marcadores de inicio y fin
+      L.marker([tilisarao.lat, tilisarao.lng]).addTo(map).bindPopup('Tilisarao (Inicio)');
+      L.marker([concaran.lat, concaran.lng]).addTo(map).bindPopup('Concarán (Destino)');
+      // Marcador de usuario
+      var markerUsuario = null;
+      function actualizarPosicionUsuario(pos) {
+        if (!markerUsuario) {
+          markerUsuario = L.marker([pos.lat, pos.lng], {icon: L.icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/684/684908.png',iconSize:[40,40],iconAnchor:[20,20]})}).addTo(map).bindPopup('Tu ubicación actual');
+        } else {
+          markerUsuario.setLatLng([pos.lat, pos.lng]);
+        }
+        map.setView([pos.lat, pos.lng], 13);
+      }
+      window.actualizarPosicionUsuario = actualizarPosicionUsuario;
+      window.map = map;
+    });
+
+    // Secuencia de indicaciones del copiloto
+    var indicaciones = [
+      { texto: 'Iniciando viaje desde Tilisarao. Usa cinturón de seguridad.', zona: 'urbana', velocidad: 40 },
+      { texto: 'Avanza por Ruta 1. Mantén velocidad máxima de 40 km/h en zona urbana.', zona: 'urbana', velocidad: 40 },
+      { texto: 'Zona rural. Puedes circular a 80 km/h, pero mantén atención. Muchos exceden los 100 km/h, ¡no lo hagas!', zona: 'rural', velocidad: 80 },
+      { texto: 'Curva peligrosa adelante. Reduce a 30 km/h.', zona: 'curva', velocidad: 30 },
+      { texto: 'Cruce con acceso a barrio. Precaución con peatones y vehículos. Mantén 40 km/h.', zona: 'urbana', velocidad: 40 },
+      { texto: 'Llegando a Concarán. Reduce a 30 km/h en zona escolar y hospital.', zona: 'urbana', velocidad: 30 },
+      { texto: '¡Has llegado a Concarán! Fin del recorrido seguro.', zona: 'fin', velocidad: 0 }
+    ];
+    var paso = 0;
+    var btn = document.getElementById('iniciarCopiloto');
+    var indicacionDiv = document.getElementById('indicacion');
+
+    // Función para calcular distancia entre dos puntos (Haversine)
+    function calcularDistancia(a, b) {
+      var R = 6371; // km
+      var dLat = (b.lat - a.lat) * Math.PI / 180;
+      var dLng = (b.lng - a.lng) * Math.PI / 180;
+      var lat1 = a.lat * Math.PI / 180;
+      var lat2 = b.lat * Math.PI / 180;
+      var aVal = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLng/2) * Math.sin(dLng/2) * Math.cos(lat1) * Math.cos(lat2);
+      var c = 2 * Math.atan2(Math.sqrt(aVal), Math.sqrt(1-aVal));
+      return R * c;
+    }
+
+    // GPS: obtener posición real del usuario y actualizar cada 5 segundos
+    function obtenerPosicionUsuario(callback) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(pos) {
+          var coords = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+          if (window.actualizarPosicionUsuario) window.actualizarPosicionUsuario(coords);
+          callback(coords);
+        }, function(error) {
+          alert('No se pudo obtener la ubicación. Por favor, activa el GPS y otorga permisos al navegador.');
+          callback(null);
+        }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+      } else {
+        alert('Tu navegador no soporta geolocalización.');
+        callback(null);
+      }
+    }
+
+    // Actualización periódica de la ubicación
+    function iniciarSeguimientoGPS() {
+      if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(function(pos) {
+          var coords = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+          if (window.actualizarPosicionUsuario) window.actualizarPosicionUsuario(coords);
+        }, function(error) {
+          // No alertar repetidamente
+        }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+      }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      iniciarSeguimientoGPS();
+    });
+
+    function hablar(texto) {
+      if ('speechSynthesis' in window) {
+        var utter = new SpeechSynthesisUtterance(texto);
+        utter.lang = 'es-AR';
+        utter.rate = 1;
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
+    // --- CHECKPOINTS DE RUTA Y AVANCE REAL ---
+    // Checkpoints aproximados entre Tilisarao y Concarán (puedes ajustar las coordenadas para mayor precisión)
+    var checkpoints = [
+      { lat: -32.683, lng: -65.188 }, // Tilisarao
+      { lat: -32.650, lng: -65.210 }, // Salida Tilisarao
+      { lat: -32.620, lng: -65.220 }, // Mitad de ruta
+      { lat: -32.590, lng: -65.235 }, // Curva peligrosa
+      { lat: -32.573, lng: -65.247 }  // Concarán
+    ];
+    var checkpointActual = 0;
+    var viajeEnCurso = false;
+    var esperandoCheckpoint = false;
+
+    // Sobrescribo la función mostrarIndicacion para que solo avance si se detecta movimiento real
+    function mostrarIndicacion() {
+      if (paso < indicaciones.length) {
+        indicacionDiv.innerHTML = indicaciones[paso].texto;
+        hablar(indicaciones[paso].texto);
+        if (indicaciones[paso].velocidad > 0) {
+          esperandoCheckpoint = true;
+          // Espera a que el usuario llegue al siguiente checkpoint
+          esperarCheckpoint(function() {
+            paso++;
+            mostrarIndicacion();
+          });
+        } else {
+          setTimeout(function() {
+            btn.innerText = 'Reiniciar';
+            btn.disabled = false;
+            paso = 0;
+            viajeEnCurso = false;
+            checkpointActual = 0;
+          }, 2500);
+        }
+      }
+    }
+
+    // Espera a que el usuario llegue al siguiente checkpoint
+    function esperarCheckpoint(callback) {
+      obtenerPosicionUsuario(function(pos) {
+        if (!pos) {
+          indicacionDiv.innerHTML = '<span style="color:red;">No se pudo obtener tu ubicación. Activa el GPS y otorga permisos.</span>';
+          return;
+        }
+        // Avisar si hay curva peligrosa cerca
+        var curvaCercana = curvasPeligrosas.find(function(curva) {
+          return calcularDistancia(pos, curva) < 0.5; // 500 metros
+        });
+        if (curvaCercana && !window.ultimaCurvaAvisada) {
+          indicacionDiv.innerHTML = '<span style="color:#d35400;font-size:18px;font-weight:bold;">¡Atención! Se aproxima una curva peligrosa: ' + curvaCercana.nombre + '. Reduce la velocidad y extrema precaución.</span>';
+          hablar('¡Atención! Se aproxima una curva peligrosa: ' + curvaCercana.nombre + '. Reduce la velocidad y extrema precaución.');
+          window.ultimaCurvaAvisada = curvaCercana.nombre;
+          setTimeout(function() { esperarCheckpoint(callback); }, 5000);
+          return;
+        }
+        if (window.ultimaCurvaAvisada && (!curvaCercana || calcularDistancia(pos, curvaCercana) > 0.5)) {
+          window.ultimaCurvaAvisada = null;
+        }
+        var siguiente = checkpoints[checkpointActual+1] || checkpoints[checkpoints.length-1];
+        var dist = calcularDistancia(pos, siguiente);
+        if (dist < 0.3) { // Menos de 300 metros al siguiente checkpoint
+          checkpointActual++;
+          esperandoCheckpoint = false;
+          callback();
+        } else {
+          indicacionDiv.innerHTML += '<br><span style="color:#0077cc;font-size:15px;">Avanza por la ruta para continuar. Distancia al próximo punto: ' + dist.toFixed(2) + ' km</span>';
+          setTimeout(function() { esperarCheckpoint(callback); }, 4000);
+        }
+      });
+    }
+
+    // --- NUEVO: Selección de destino por menú desplegable ---
+    var destinoSeleccionado = null;
+    var destinoCoords = null;
+    var destinoSelect = document.getElementById('destinoSelect');
+    var buscarDestinoBtn = document.getElementById('buscarDestino');
+    var destinoStatus = document.getElementById('destinoStatus');
+    var map = null;
+    document.addEventListener('DOMContentLoaded', function() {
+      map = window.map;
+    });
+    // --- Coordenadas fijas para destinos de San Luis ---
+    var destinosSanLuis = {
+      "San Luis": { lat: -33.295, lng: -66.335 },
+      "Villa Mercedes": { lat: -33.675, lng: -65.467 },
+      "Merlo": { lat: -32.344, lng: -65.010 },
+      "La Toma": { lat: -33.070, lng: -65.617 },
+      "Concarán": { lat: -32.573, lng: -65.247 },
+      "Tilisarao": { lat: -32.683, lng: -65.188 },
+      "Justo Daract": { lat: -33.845, lng: -65.184 },
+      "Quines": { lat: -32.217, lng: -65.950 },
+      "Naschel": { lat: -32.920, lng: -65.370 },
+      "Santa Rosa del Conlara": { lat: -32.438, lng: -65.195 },
+      "Luján": { lat: -32.385, lng: -65.617 },
+      "Candelaria": { lat: -32.533, lng: -65.233 },
+      "La Punta": { lat: -33.150, lng: -66.317 },
+      "El Trapiche": { lat: -33.183, lng: -66.050 },
+      "Potrero de los Funes": { lat: -33.230, lng: -66.250 }
+    };
+    buscarDestinoBtn.onclick = function() {
+      var destino = destinoSelect.value;
+      if (!destino) {
+        destinoStatus.innerText = 'Por favor, selecciona un destino válido en San Luis.';
+        return;
+      }
+      if (destinosSanLuis[destino]) {
+        destinoCoords = destinosSanLuis[destino];
+        destinoSeleccionado = destino;
+        destinoStatus.innerText = 'Destino encontrado: ' + destino + '. Listo para iniciar el viaje.';
+        // Marcar destino en el mapa
+        if (map) {
+          if (window.destinoMarker) map.removeLayer(window.destinoMarker);
+          window.destinoMarker = L.marker([destinoCoords.lat, destinoCoords.lng], {icon: L.icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/684/684908.png',iconSize:[40,40],iconAnchor:[20,20]})}).addTo(map).bindPopup('Destino: ' + destino).openPopup();
+          map.setView([destinoCoords.lat, destinoCoords.lng], 11);
+        }
+      } else {
+        destinoStatus.innerText = 'No se encontró el destino. Intenta con otro nombre.';
+        destinoSeleccionado = null;
+        destinoCoords = null;
+      }
+    };
+    // Modificar el botón de copiloto para usar el destino seleccionado
+    btn.onclick = function() {
+      if (!destinoCoords) {
+        destinoStatus.innerText = 'Debes seleccionar un destino válido antes de iniciar el viaje.';
+        return;
+      }
+      btn.disabled = true;
+      btn.innerText = 'En viaje...';
+      paso = 0;
+      viajeEnCurso = true;
+      checkpointActual = 0;
+      // Generar checkpoints dinámicos entre la posición actual y el destino
+      obtenerPosicionUsuario(function(pos) {
+        if (pos) {
+          generarCheckpoints(pos, destinoCoords);
+          mostrarIndicacion();
+        } else {
+          destinoStatus.innerText = 'No se pudo obtener tu ubicación actual.';
+          btn.disabled = false;
+          btn.innerText = 'Iniciar Copiloto';
+        }
+      });
+    };
+    // Generar checkpoints entre origen y destino
+    function generarCheckpoints(origen, destino) {
+      checkpoints = [origen];
+      // Generar 3 puntos intermedios (puedes mejorar con rutas reales)
+      for (var i = 1; i <= 3; i++) {
+        var lat = origen.lat + (destino.lat - origen.lat) * (i/4);
+        var lng = origen.lng + (destino.lng - origen.lng) * (i/4);
+        checkpoints.push({lat: lat, lng: lng});
+      }
+      checkpoints.push(destino);
+      checkpointActual = 0;
+    }
+
+    // --- TEST DE CLAKI ---
+    var testClaki = [
+      { pregunta: '¡Hola! Soy Claki, piloto de Tilisarao. Antes de conducir, ¿has bebido alcohol en las últimas 6 horas?', opciones: ['Sí', 'No'], correcta: 1 },
+      { pregunta: '¿Te sientes mareado, con sueño o con reflejos lentos?', opciones: ['Sí', 'No'], correcta: 1 },
+      { pregunta: '¿Estás seguro de que puedes conducir de forma segura y responsable?', opciones: ['No', 'Sí'], correcta: 1 },
+      { pregunta: '¿Alguien te recomienda NO manejar hoy?', opciones: ['Sí', 'No'], correcta: 1 }
+    ];
+    var respuestasClaki = [];
+    var pasoClaki = 0;
+    var clakiModal = document.getElementById('claki-test-modal');
+    var clakiContent = document.getElementById('claki-test-content');
+    var clakiBtn = document.getElementById('activarTestClaki');
+    var clakiClose = document.getElementById('claki-test-close');
+    var copilotoBtn = document.getElementById('iniciarCopiloto');
+    var testAprobado = false;
+
+    function hablarClaki(texto) {
+      if ('speechSynthesis' in window) {
+        var utter = new SpeechSynthesisUtterance(texto);
+        utter.lang = 'es-AR';
+        utter.rate = 1;
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
+    function mostrarPreguntaClaki() {
+      if (pasoClaki < testClaki.length) {
+        var q = testClaki[pasoClaki];
+        clakiContent.innerHTML = '<p style="font-size:18px;">' + q.pregunta + '</p>' +
+          q.opciones.map(function(op, i) {
+            return '<button class="claki-opcion" data-idx="' + i + '" style="margin:8px 6px;padding:8px 18px;font-size:16px;background:#ffa500;color:#fff;border:none;border-radius:8px;cursor:pointer;">' + op + '</button>';
+          }).join('');
+        hablarClaki(q.pregunta);
+        Array.from(document.getElementsByClassName('claki-opcion')).forEach(function(btn) {
+          btn.onclick = function() {
+            respuestasClaki.push(parseInt(btn.getAttribute('data-idx')));
+            pasoClaki++;
+            mostrarPreguntaClaki();
+          };
+        });
+      } else {
+        evaluarTestClaki();
+      }
+    }
+
+    function evaluarTestClaki() {
+      var aprobado = true;
+      for (var i = 0; i < testClaki.length; i++) {
+        if (respuestasClaki[i] !== testClaki[i].correcta) {
+          aprobado = false;
+          break;
+        }
+      }
+      if (aprobado) {
+        clakiContent.innerHTML = '<p style="font-size:18px;color:green;font-weight:bold;">¡Aprobado! Puedes conducir. ¡Buen viaje y maneja con responsabilidad!</p>';
+        hablarClaki('¡Aprobado! Puedes conducir. ¡Buen viaje y maneja con responsabilidad!');
+        testAprobado = true;
+        copilotoBtn.disabled = false;
+      } else {
+        clakiContent.innerHTML = '<p style="font-size:18px;color:red;font-weight:bold;">No puedes conducir. Por tu seguridad, no inicies el viaje. Busca a un conductor sobrio o espera.</p>';
+        hablarClaki('No puedes conducir. Por tu seguridad, no inicies el viaje. Busca a un conductor sobrio o espera.');
+        testAprobado = false;
+        copilotoBtn.disabled = true;
+      }
+      clakiClose.style.display = 'block';
+    }
+
+    clakiBtn.onclick = function() {
+      clakiModal.style.display = 'flex';
+      clakiClose.style.display = 'none';
+      clakiContent.innerHTML = '<p style="font-size:18px;">¡Hola! Soy Claki, piloto de Tilisarao. Antes de salir, necesito hacerte unas preguntas para tu seguridad.</p>';
+      hablarClaki('¡Hola! Soy Claki, piloto de Tilisarao. Antes de salir, necesito hacerte unas preguntas para tu seguridad.');
+      setTimeout(function() {
+        respuestasClaki = [];
+        pasoClaki = 0;
+        mostrarPreguntaClaki();
+      }, 2000);
+    };
+    clakiClose.onclick = function() {
+      clakiModal.style.display = 'none';
+    };
+    // Al cargar, el copiloto está deshabilitado hasta aprobar el test
+    document.addEventListener('DOMContentLoaded', function() {
+      copilotoBtn.disabled = true;
+    });
+
+    // Mostrar coordenadas en pantalla
+    function mostrarCoordenadasUsuario(pos) {
+      var coordDiv = document.getElementById('coordenadasUsuario');
+      if (coordDiv && pos) {
+        coordDiv.textContent = pos.lat.toFixed(5) + ", " + pos.lng.toFixed(5);
+      } else if (coordDiv) {
+        coordDiv.textContent = "No disponible";
+      }
+    }
+    // Modificar actualizarPosicionUsuario para mostrar coordenadas
+    document.addEventListener('DOMContentLoaded', function() {
+      var originalActualizar = window.actualizarPosicionUsuario;
+      window.actualizarPosicionUsuario = function(pos) {
+        originalActualizar(pos);
+        mostrarCoordenadasUsuario(pos);
+      };
+    });
+  </script>
+</body>
+</html>
