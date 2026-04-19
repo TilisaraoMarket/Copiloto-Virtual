@@ -5,6 +5,18 @@
   <meta charset="UTF-8">
   <title>Copiloto Virtual - Ahora podés viajar por todo San Luis</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- PWA & Mobile Icons -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ffa500">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="logo-copiloto.png">
+  <link rel="icon" type="image/png" href="logo-copiloto.png">
+  
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body { font-family: Arial, sans-serif; }
     #map { height: 350px; width: 100%; margin-bottom: 24px; }
@@ -103,7 +115,7 @@
   <div id="map"></div>
   <div id="ubicacionUsuario" style="text-align:center;margin-bottom:18px;color:#0077cc;font-size:16px;font-weight:bold;">Ubicación actual: <span id="coordenadasUsuario">Obteniendo...</span></div>
   <div id="copiloto-panel">
-    <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt="Auto">
+    <img src="logo-copiloto.png" alt="Copiloto Virtual">
     <h2>¡Bienvenido al Copiloto Virtual!</h2>
     <p>El copiloto te guiará desde tu ubicación actual hasta el destino que elijas en San Luis.<br>Presiona el botón para iniciar el viaje y sigue las indicaciones.</p>
     <button id="iniciarCopiloto" style="padding:12px 28px;font-size:18px;background:#ffa500;color:#fff;border:none;border-radius:8px;cursor:pointer;">Iniciar Copiloto</button>
@@ -111,7 +123,7 @@
   </div>
   <div id="claki-test-modal">
     <div>
-      <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt="Claki">
+      <img src="logo-copiloto.png" alt="Copiloto Virtual">
       <h2>Test de Prevención (Copiloto de Tilisarao)</h2>
       <div id="claki-test-content"></div>
       <button id="claki-test-close" style="display:none;margin-top:18px;padding:8px 20px;background:#aaa;color:#fff;border:none;border-radius:8px;cursor:pointer;">Cerrar</button>
@@ -141,6 +153,17 @@
     <button id="buscarDestino" style="padding:8px 18px;font-size:16px;background:#0077cc;color:#fff;border:none;border-radius:8px;cursor:pointer;">Buscar destino</button>
     <div id="destinoStatus" style="margin-top:8px;color:#0077cc;font-size:15px;"></div>
   </div>
+
+  <!-- Tarjeta de Instalación PWA -->
+  <div id="installCard" style="max-width:500px; margin:24px auto; padding:24px; background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border:2px solid #ffa500; border-radius:16px; text-align:center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; overflow: hidden;">
+    <div style="position: absolute; top: -10px; right: -10px; width: 60px; height: 60px; background: rgba(255, 165, 0, 0.1); border-radius: 50%;"></div>
+    <i class="fa-solid fa-mobile-screen-button" style="font-size:48px; color:#ffa500; margin-bottom:16px; display: block;"></i>
+    <h3 style="margin:0 0 10px 0; color:#1e3a8a; font-size: 22px;">Instalar Copiloto Virtual</h3>
+    <p style="margin:0 0 20px 0; color:#475569; font-size:16px; line-height: 1.5;">Agrega el acceso directo en el inicio de tu teléfono para un acceso rápido y sencillo.</p>
+    <button id="btnInstallApp" style="padding:14px 32px; font-size:18px; background:#ffa500; color:#fff; border:none; border-radius:10px; cursor:pointer; font-weight:bold; width: 100%; transition: all 0.3s; box-shadow: 0 4px 10px rgba(255, 165, 0, 0.3);">
+      <i class="fa-solid fa-download" style="margin-right:10px;"></i> Instalar ahora
+    </button>
+  </div>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
@@ -167,7 +190,7 @@
       var markerUsuario = null;
       function actualizarPosicionUsuario(pos) {
         if (!markerUsuario) {
-          markerUsuario = L.marker([pos.lat, pos.lng], {icon: L.icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/684/684908.png',iconSize:[40,40],iconAnchor:[20,20]})}).addTo(map).bindPopup('Tu ubicación actual');
+          markerUsuario = L.marker([pos.lat, pos.lng], {icon: L.icon({iconUrl:'logo-copiloto.png',iconSize:[40,40],iconAnchor:[20,20]})}).addTo(map).bindPopup('Tu ubicación actual');
         } else {
           markerUsuario.setLatLng([pos.lat, pos.lng]);
         }
@@ -356,7 +379,7 @@
         // Marcar destino en el mapa
         if (map) {
           if (window.destinoMarker) map.removeLayer(window.destinoMarker);
-          window.destinoMarker = L.marker([destinoCoords.lat, destinoCoords.lng], {icon: L.icon({iconUrl:'https://cdn-icons-png.flaticon.com/512/684/684908.png',iconSize:[40,40],iconAnchor:[20,20]})}).addTo(map).bindPopup('Destino: ' + destino).openPopup();
+          window.destinoMarker = L.marker([destinoCoords.lat, destinoCoords.lng], {icon: L.icon({iconUrl:'logo-copiloto.png',iconSize:[40,40],iconAnchor:[20,20]})}).addTo(map).bindPopup('Destino: ' + destino).openPopup();
           map.setView([destinoCoords.lat, destinoCoords.lng], 11);
         }
       } else {
@@ -519,6 +542,58 @@
         mostrarCoordenadasUsuario(pos);
       };
     });
+
+    // --- LÓGICA PWA ---
+    let deferredPrompt;
+    const installCard = document.getElementById('installCard');
+    const btnInstallApp = document.getElementById('btnInstallApp');
+
+    const isIos = () => {
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        return /iphone|ipad|ipod/.test(userAgent);
+    };
+
+    const isInStandaloneMode = () => ('standalone' in window.navigator) || (window.navigator.standalone);
+
+    // Si ya está instalado, ocultamos la tarjeta
+    if (isInStandaloneMode()) {
+        installCard.style.display = 'none';
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+    });
+
+    btnInstallApp.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            if (outcome === 'accepted') {
+                installCard.style.display = 'none';
+            }
+        } else if (isIos()) {
+            alert('Para instalar en iPhone: Toca el botón "Compartir" (el icono del cuadrado con la flecha) y luego selecciona "Agregar a inicio".');
+        } else {
+            alert('Para instalarla, busca la opción "Instalar aplicación" o "Agregar a la pantalla de inicio" en el menú de tu navegador movil.');
+        }
+    });
+
+    window.addEventListener('appinstalled', () => {
+        installCard.style.display = 'none';
+    });
+
+    // Registrar Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('sw.js').then(function(registration) {
+                console.log('ServiceWorker registrado con éxito');
+            }, function(err) {
+                console.log('Error al registrar ServiceWorker: ', err);
+            });
+        });
+    }
   </script>
 </body>
 </html>

@@ -1,0 +1,66 @@
+{
+  "name": "Copiloto Virtual San Luis",
+  "short_name": "Copiloto",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#ffa500",
+  "description": "Tu asistente de educación vial y navegación para viajar seguro por San Luis.",
+  "lang": "es-AR",
+  "categories": [
+    "education",
+    "travel",
+    "safety"
+  ],
+  "icons": [
+    {
+      "src": "logo-copiloto.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo-copiloto.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo-copiloto.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "logo-copiloto.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "logo-copiloto.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Portada Copiloto Virtual"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Iniciar viaje",
+      "short_name": "Viajar",
+      "description": "Inicia el asistente de viaje",
+      "url": "./index.html",
+      "icons": [
+        {
+          "src": "logo-copiloto.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
