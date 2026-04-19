@@ -98,7 +98,7 @@
 <body>
   <h1>Copiloto Virtual: ¡Ahora podés viajar por todo San Luis!</h1>
   <div style="text-align:center;margin-bottom:16px;color:#555;font-size:18px;font-weight:bold;">
-    En honor a Claki, piloto de Tilisarao y educador vial. Su legado: ¡la seguridad primero!
+    Copiloto de Tilisarao y educador vial. Su legado: ¡la seguridad primero!
   </div>
   <div id="map"></div>
   <div id="ubicacionUsuario" style="text-align:center;margin-bottom:18px;color:#0077cc;font-size:16px;font-weight:bold;">Ubicación actual: <span id="coordenadasUsuario">Obteniendo...</span></div>
@@ -112,12 +112,12 @@
   <div id="claki-test-modal">
     <div>
       <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt="Claki">
-      <h2>Test de Claki (Piloto de Tilisarao)</h2>
+      <h2>Test de Prevención (Copiloto de Tilisarao)</h2>
       <div id="claki-test-content"></div>
       <button id="claki-test-close" style="display:none;margin-top:18px;padding:8px 20px;background:#aaa;color:#fff;border:none;border-radius:8px;cursor:pointer;">Cerrar</button>
     </div>
   </div>
-  <button id="activarTestClaki" style="padding:10px 22px;font-size:16px;background:#0077cc;color:#fff;border:none;border-radius:8px;cursor:pointer;position:fixed;top:18px;right:18px;z-index:1500;">Test de Claki</button>
+  <button id="activarTestClaki" style="padding:10px 22px;font-size:16px;background:#0077cc;color:#fff;border:none;border-radius:8px;cursor:pointer;position:fixed;top:18px;right:18px;z-index:1500;">Test de Prevención</button>
   <div id="seleccion-destino" style="max-width:500px;margin:24px auto 0 auto;text-align:center;">
     <label for="destinoSelect" style="font-size:17px;font-weight:bold;">Destino en San Luis:</label>
     <select id="destinoSelect" style="padding:8px 12px;font-size:16px;border-radius:6px;border:1px solid #ccc;width:60%;margin:8px 0;">
@@ -403,7 +403,7 @@
 
     // --- TEST DE CLAKI ---
     var testClaki = [
-      { pregunta: '¡Hola! Soy Claki, piloto de Tilisarao. Antes de conducir, ¿has bebido alcohol en las últimas 6 horas?', opciones: ['Sí', 'No'], correcta: 1 },
+      { pregunta: '¡Hola! Soy el Copiloto de Tilisarao. Antes de conducir, ¿has bebido alcohol en las últimas 6 horas?', opciones: ['Sí', 'No'], correcta: 1 },
       { pregunta: '¿Te sientes mareado, con sueño o con reflejos lentos?', opciones: ['Sí', 'No'], correcta: 1 },
       { pregunta: '¿Estás seguro de que puedes conducir de forma segura y responsable?', opciones: ['No', 'Sí'], correcta: 1 },
       { pregunta: '¿Alguien te recomienda NO manejar hoy?', opciones: ['Sí', 'No'], correcta: 1 }
@@ -455,8 +455,23 @@
         }
       }
       if (aprobado) {
-        clakiContent.innerHTML = '<p style="font-size:18px;color:green;font-weight:bold;">¡Aprobado! Puedes conducir. ¡Buen viaje y maneja con responsabilidad!</p>';
-        hablarClaki('¡Aprobado! Puedes conducir. ¡Buen viaje y maneja con responsabilidad!');
+        var fecha = new Date().toLocaleString('es-AR');
+        clakiContent.innerHTML = '<div style="background-color:#d4edda; color:#155724; border:2px solid #28a745; padding:15px; border-radius:10px; margin-bottom:15px;">' +
+          '<h3 style="margin-top:0;font-size:20px;">✅ CERTIFICADO DE VIAJE SEGURO</h3>' +
+          '<p style="font-size:16px;margin-bottom:0;"><b>Conductor APTO</b><br>Fecha y hora: ' + fecha + '</p>' +
+          '</div>' +
+          '<button id="btnWhatsapp" style="padding:10px 15px; font-size:16px; background:#25D366; color:#fff; border:none; border-radius:8px; cursor:pointer; margin-bottom:10px; display:inline-flex; align-items:center; justify-content:center; width:100%;">📲 Avisar por WhatsApp a un familiar</button>' +
+          '<p style="font-size:16px; font-weight:bold;">¡Muestra esta pantalla en el peaje o control!</p>';
+          
+        setTimeout(function() {
+          document.getElementById('btnWhatsapp').onclick = function() {
+            var mensaje = "Hola, acabo de completar y aprobar mi Test de prevención de Copiloto Virtual. Estoy APTO para manejar y salgo a la ruta en este momento. (Test realizado: " + fecha + ")";
+            var urlWhatsapp = "https://wa.me/?text=" + encodeURIComponent(mensaje);
+            window.open(urlWhatsapp, '_blank');
+          };
+        }, 100);
+
+        hablarClaki('¡Aprobado! Puedes conducir. Ya tienes tu certificado y puedes avisar a un familiar por WhatsApp.');
         testAprobado = true;
         copilotoBtn.disabled = false;
       } else {
@@ -471,8 +486,8 @@
     clakiBtn.onclick = function() {
       clakiModal.style.display = 'flex';
       clakiClose.style.display = 'none';
-      clakiContent.innerHTML = '<p style="font-size:18px;">¡Hola! Soy Claki, piloto de Tilisarao. Antes de salir, necesito hacerte unas preguntas para tu seguridad.</p>';
-      hablarClaki('¡Hola! Soy Claki, piloto de Tilisarao. Antes de salir, necesito hacerte unas preguntas para tu seguridad.');
+      clakiContent.innerHTML = '<p style="font-size:18px;">¡Hola! Soy el Copiloto de Tilisarao. Antes de salir, necesito hacerte unas preguntas para tu seguridad.</p>';
+      hablarClaki('¡Hola! Soy el Copiloto de Tilisarao. Antes de salir, necesito hacerte unas preguntas para tu seguridad.');
       setTimeout(function() {
         respuestasClaki = [];
         pasoClaki = 0;
